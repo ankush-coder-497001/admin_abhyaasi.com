@@ -1,116 +1,17 @@
+import Loader from "../components/ui/Loader";
+import { useGetAllUsers } from "../hooks/useUsers";
+
 const UserManagement = () => {
-  const users = [
-    {
-      _id: "6905a66b74cd9507fd6fe961",
-      name: "Ankush",
-      email: "admin@abhyasi.com",
-      certificates: [],
-      completedCourses: [],
-      enrolledProfessions: [],
-      lastLogin: "2025-11-03T19:56:42.022Z",
-      currentCourse: "React Fundamentals",
-      currentModule: "Component Fragmentation",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe962",
-      name: "Riya Sharma",
-      email: "riya.sharma@example.com",
-      certificates: [],
-      completedCourses: ["HTML & CSS Basics"],
-      enrolledProfessions: ["Frontend Developer"],
-      lastLogin: "2025-11-04T09:14:28.533Z",
-      currentCourse: "JavaScript Advanced",
-      currentModule: "Async Patterns",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe963",
-      name: "Arjun Mehta",
-      email: "arjun.mehta@example.com",
-      certificates: [],
-      completedCourses: ["Python for Beginners"],
-      enrolledProfessions: ["Data Analyst"],
-      lastLogin: "2025-11-02T16:45:09.201Z",
-      currentCourse: "Machine Learning with Scikit-learn",
-      currentModule: "Regression Models",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe964",
-      name: "Khushi Patel",
-      email: "khushi.patel@example.com",
-      certificates: [],
-      completedCourses: [],
-      enrolledProfessions: [],
-      lastLogin: "2025-11-03T21:02:15.472Z",
-      currentCourse: "UI/UX Design Essentials",
-      currentModule: "Color Psychology",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe965",
-      name: "Devansh Rao",
-      email: "devansh.rao@example.com",
-      certificates: [],
-      completedCourses: ["AWS Cloud Practitioner"],
-      enrolledProfessions: ["DevOps Engineer"],
-      lastLogin: "2025-11-04T10:30:18.981Z",
-      currentCourse: "Docker & Kubernetes Mastery",
-      currentModule: "Container Orchestration",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe966",
-      name: "Sneha Kapoor",
-      email: "sneha.kapoor@example.com",
-      certificates: [],
-      completedCourses: [],
-      enrolledProfessions: [],
-      lastLogin: "2025-11-03T22:12:05.735Z",
-      currentCourse: "Full Stack Web Development",
-      currentModule: "Express Routing",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe967",
-      name: "Rohan Gupta",
-      email: "rohan.gupta@example.com",
-      certificates: [],
-      completedCourses: ["Network Security Basics"],
-      enrolledProfessions: ["Cybersecurity Analyst"],
-      lastLogin: "2025-11-04T07:18:24.647Z",
-      currentCourse: "Ethical Hacking Fundamentals",
-      currentModule: "Exploitation Techniques",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe968",
-      name: "Priya Nair",
-      email: "priya.nair@example.com",
-      certificates: [],
-      completedCourses: [],
-      enrolledProfessions: [],
-      lastLogin: "2025-11-03T20:47:33.902Z",
-      currentCourse: "Data Visualization with Python",
-      currentModule: "Matplotlib Essentials",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe969",
-      name: "Aditya Verma",
-      email: "aditya.verma@example.com",
-      certificates: [],
-      completedCourses: ["HTML & CSS Basics", "JavaScript Essentials"],
-      enrolledProfessions: ["Frontend Developer"],
-      lastLogin: "2025-11-04T11:08:55.313Z",
-      currentCourse: "React Advanced",
-      currentModule: "Performance Optimization",
-    },
-    {
-      _id: "6905a66b74cd9507fd6fe970",
-      name: "Neha Singh",
-      email: "neha.singh@example.com",
-      certificates: [],
-      completedCourses: [],
-      enrolledProfessions: [],
-      lastLogin: "2025-11-03T23:56:40.128Z",
-      currentCourse: "Cloud Fundamentals",
-      currentModule: "IAM & Security Groups",
-    },
-  ];
+  const { data, isLoading, error } = useGetAllUsers();
+  const users = data?.users || [];
+  console.log(users);
+  if (isLoading) {
+    return (
+      <div className="h-[70vh] w-full">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -169,10 +70,14 @@ const UserManagement = () => {
                   {/* Current Course */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {user.currentCourse || "—"}
+                      {typeof user.currentCourse === "object"
+                        ? user.currentCourse?.title || "—"
+                        : user.currentCourse || "—"}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {user.currentModule || "—"}
+                      {typeof user.currentModule === "object"
+                        ? user.currentModule?.title || "—"
+                        : user.currentModule || "—"}
                     </div>
                   </td>
 
@@ -180,14 +85,23 @@ const UserManagement = () => {
                   <td className="px-6 py-4 text-sm text-gray-700">
                     <div>
                       <strong>Professions:</strong>{" "}
-                      {user.enrolledProfessions.length > 0
-                        ? user.enrolledProfessions.join(", ")
+                      {user.enrolledProfessions &&
+                      user.enrolledProfessions.length > 0
+                        ? user.enrolledProfessions
+                            .map((prof) =>
+                              typeof prof === "object" ? prof.title : prof
+                            )
+                            .join(", ")
                         : "None"}
                     </div>
                     <div>
                       <strong>Courses:</strong>{" "}
-                      {user.completedCourses.length > 0
-                        ? user.completedCourses.join(", ")
+                      {user.completedCourses && user.completedCourses.length > 0
+                        ? user.completedCourses
+                            .map((course) =>
+                              typeof course === "object" ? course.title : course
+                            )
+                            .join(", ")
                         : "None"}
                     </div>
                   </td>

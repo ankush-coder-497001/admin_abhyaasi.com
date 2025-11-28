@@ -37,6 +37,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
       ],
       testcases: [
         {
+          id: "T1",
           type: "unit",
           input: "",
           expectedOutput: "",
@@ -140,7 +141,9 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
   // Test cases handlers
   const addTestCase = () => {
     const newCodingTask = { ...formData.codingTask };
+    const nextId = `T${newCodingTask.testcases.length + 1}`;
     newCodingTask.testcases.push({
+      id: nextId,
       type: "unit",
       input: "",
       expectedOutput: "",
@@ -326,7 +329,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               <button
                 type="button"
                 onClick={() => removeTopic(index)}
-                className="text-red-600 hover:text-red-800 py-1"
+                className="text-red-600 hover:text-red-800 py-1 cursor-pointer"
               >
                 <RiDeleteBin6Line className="w-5 h-5" />
               </button>
@@ -342,7 +345,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
           <button
             type="button"
             onClick={addMCQ}
-            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
           >
             Add MCQ
           </button>
@@ -355,13 +358,15 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                 <button
                   type="button"
                   onClick={() => removeMCQ(index)}
-                  className="text-red-600 hover:text-red-800 py-1"
+                  className="text-red-600 hover:text-red-800 py-1 cursor-pointer"
                 >
                   <RiDeleteBin6Line className="w-5 h-5" />
                 </button>
               </div>
               <div className="space-y-3 mt-3">
                 <textarea
+                  required
+                  type="text"
                   value={mcq.question}
                   onChange={(e) => updateMCQ(index, "question", e.target.value)}
                   placeholder="Question"
@@ -375,6 +380,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                       className="flex items-center gap-3 py-1"
                     >
                       <input
+                        required
                         type="radio"
                         name={`correct-${index}`}
                         checked={mcq.correctOptionIndex === optIndex}
@@ -384,6 +390,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                         className="border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <input
+                        required
                         type="text"
                         value={option}
                         onChange={(e) =>
@@ -399,6 +406,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                   ))}
                 </div>
                 <textarea
+                  required
                   value={mcq.explanation}
                   onChange={(e) =>
                     updateMCQ(index, "explanation", e.target.value)
@@ -419,6 +427,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                     }
                     min="1"
                     className="mt-2 block w-32 rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
+                    required
                   />
                 </div>
               </div>
@@ -436,6 +445,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               Title
             </label>
             <input
+              required
               type="text"
               value={formData.codingTask.title}
               onChange={(e) =>
@@ -464,6 +474,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               }
               rows="3"
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
+              required
             />
           </div>
           <div>
@@ -471,6 +482,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               Languages
             </label>
             <input
+              required
               type="text"
               value={formData.codingTask.languages.join(", ")}
               onChange={(e) =>
@@ -493,6 +505,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               Timeout (seconds)
             </label>
             <input
+              required
               type="number"
               value={formData.codingTask.timeoutSeconds}
               onChange={(e) =>
@@ -517,6 +530,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
             {formData.codingTask.templateFiles.map((file, index) => (
               <div key={index} className="space-y-2 mb-4">
                 <input
+                  required
                   type="text"
                   value={file.path}
                   onChange={(e) => {
@@ -534,6 +548,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                   className="mt-2 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
                 />
                 <textarea
+                  required
                   value={file.content}
                   onChange={(e) => {
                     const newFiles = [...formData.codingTask.templateFiles];
@@ -563,7 +578,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               <button
                 type="button"
                 onClick={addTestCase}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
               >
                 Add Test Case
               </button>
@@ -575,7 +590,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                   <button
                     type="button"
                     onClick={() => removeTestCase(index)}
-                    className="text-red-600 hover:text-red-800 py-1"
+                    className="text-red-600 hover:text-red-800 py-1 cursor-pointer"
                   >
                     <RiDeleteBin6Line className="w-5 h-5" />
                   </button>
@@ -680,7 +695,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
           <button
             type="button"
             onClick={addInterviewQuestion}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
           >
             Add Question
           </button>
@@ -691,6 +706,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               <div className="flex-1 space-y-2">
                 <input
                   type="text"
+                  required
                   value={question.question}
                   onChange={(e) =>
                     updateInterviewQuestion(index, "question", e.target.value)
@@ -699,6 +715,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
                   className="mt-2 block w-full rounded-md border-gray-300 shadow-sm px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
                 />
                 <textarea
+                  required
                   value={question.suggestedAnswer}
                   onChange={(e) =>
                     updateInterviewQuestion(
@@ -715,7 +732,7 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
               <button
                 type="button"
                 onClick={() => removeInterviewQuestion(index)}
-                className="text-red-600 hover:text-red-800"
+                className="text-red-600 hover:text-red-800 cursor-pointer"
               >
                 <RiDeleteBin6Line className="w-5 h-5" />
               </button>
@@ -729,13 +746,13 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer"
         >
           Save
         </button>
