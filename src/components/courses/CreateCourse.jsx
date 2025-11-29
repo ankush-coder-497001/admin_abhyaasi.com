@@ -3,9 +3,14 @@ import { useSelector } from "react-redux";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { setInitialCourse } from "../../redux/slices/coursesSlice";
 import { useDispatch } from "react-redux";
+import { useCreateCourse, useUpdateCourse } from "../../hooks/useCourse";
+import { useUploadImg } from "../../hooks/useUpload";
+import toast from "react-hot-toast";
+import Loader from "../ui/Loader";
 
 const CreateCourse = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const titleRef = useRef();
   const descriptionRef = useRef();
   const difficultyRef = useRef();
@@ -17,29 +22,96 @@ const CreateCourse = () => {
 
   const initialCourse = useSelector((state) => state.courses.initialCourse);
 
+  const { mutate: uploadImg, isPending: isUploadingImg } = useUploadImg();
+  const { mutate: updateCourse, isPending: isUpdatingCourse } =
+    useUpdateCourse();
+  const { mutate: createCourse, isPending: isCreatingCourse } =
+    useCreateCourse();
+
+  const isLoading = isUploadingImg || isUpdatingCourse || isCreatingCourse;
+
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmitCourse = async (e) => {
     e.preventDefault();
 
+    if (!initialCourse) {
+      if (!thumbnailUrlRef.current.files.length) {
+        toast.error("Please upload a thumbnail image for the course.");
+        return;
+      }
+    }
+
+    let imageUrl =
+      thumbnailUrlRef.current.value || initialCourse?.thumbnailUrl || "";
+
+    // Upload image if a new one is selected
+    if (thumbnailUrlRef.current.files.length > 0) {
+      return uploadImg(
+        { image: thumbnailUrlRef.current.files[0] },
+        {
+          onSuccess: (data) => {
+            imageUrl = data.url;
+            submitCourseData(imageUrl);
+          },
+          onError: (error) => {
+            toast.error("Failed: Image upload failed");
+            console.log(error);
+          },
+        }
+      );
+    }
+
+    // If no image to upload, submit directly
+    submitCourseData(imageUrl);
+  };
+
+  const submitCourseData = (imageUrl) => {
     const courseData = {
       title: titleRef.current.value.trim(),
       description: descriptionRef.current.value.trim(),
       difficulty: difficultyRef.current.value,
       duration: durationRef.current.value.trim(),
-      thumbnailUrl: thumbnailUrlRef.current.files[0],
+      thumbnailUrl: imageUrl,
       status: statusRef.current.value,
       isPublished: isPublishedRef.current.checked,
     };
 
-    console.log("Submitted Course:", courseData);
-    if (!initialCourse) {
-      // for new course creation
-      dispatch(setInitialCourse({ ...courseData, _id: Date.now() }));
-      console.log("Creating new course:", courseData);
+    if (initialCourse) {
+      updateCourse(
+        { courseId: initialCourse._id, courseData },
+        {
+          onSuccess: (data) => {
+            console.log(data);
+            toast.success("Course updated successfully!");
+            dispatch(setInitialCourse(data.course));
+          },
+          onError: (error) => {
+            toast.error("Course update failed");
+            console.log(error);
+          },
+        }
+      );
     } else {
-      // for updating existing course
-      // pass new updated course to initialCourse in redux store
-      dispatch(setInitialCourse({ ...courseData, _id: initialCourse._id }));
-      console.log("Updating course:", { id: initialCourse.id, ...courseData });
+      createCourse(courseData, {
+        onSuccess: (data) => {
+          console.log(data);
+          toast.success("Course created successfully!");
+          dispatch(setInitialCourse(data.course));
+        },
+        onError: (error) => {
+          toast.error("Course creation failed");
+        },
+      });
     }
   };
 
@@ -58,6 +130,11 @@ const CreateCourse = () => {
 
   return (
     <div className="max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-8 border border-gray-100">
+      {isLoading && (
+        <div className="fixed inset-0 bg-[#00000043] bg-opacity-50 flex items-center justify-center z-50">
+          <Loader />
+        </div>
+      )}
       {/* Header */}
       <div
         className={`flex items-center justify-between mb-8 ${
@@ -188,14 +265,23 @@ const CreateCourse = () => {
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Thumbnail
           </label>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex flex-col gap-4">
             <input
-              required
               ref={thumbnailUrlRef}
               type="file"
               accept="image/*"
-              className="block w-full sm:w-auto text-sm text-gray-600 border border-gray-300 rounded-lg p-2 cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500"
+              onChange={handleThumbnailChange}
+              className="block w-full text-sm text-gray-600 border border-gray-300 rounded-lg p-2 cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500"
             />
+            {(thumbnailPreview || initialCourse?.thumbnailUrl) && (
+              <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                <img
+                  src={thumbnailPreview || initialCourse?.thumbnailUrl}
+                  alt="Thumbnail preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -203,9 +289,10 @@ const CreateCourse = () => {
         <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all cursor-pointer"
+            disabled={isLoading}
+            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {initialCourse ? "Update" : "Create"}
+            {isLoading ? "Processing..." : initialCourse ? "Update" : "Create"}
           </button>
         </div>
       </form>

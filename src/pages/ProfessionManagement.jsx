@@ -40,7 +40,7 @@ const ProfessionManagement = () => {
       {activeView === "all-professions" ? (
         <AllProfessions setActiveView={setActiveView} />
       ) : (
-        <CreateProfession />
+        <CreateProfession setActiveView={setActiveView} />
       )}
     </div>
   );
