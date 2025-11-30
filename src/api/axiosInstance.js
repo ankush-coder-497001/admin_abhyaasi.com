@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL, // from .env
+  baseURL: `${import.meta.env.VITE_SERVER_URL}/api/v1`, // from .env
   timeout: 50000,
   headers: {
     "Content-Type": "application/json",
@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 // Attach token and handle FormData
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("abhyaasi_admin_token");
     if (token) {
       // Ensure token has Bearer prefix if not already present
       const bearerToken = token.startsWith("Bearer ")

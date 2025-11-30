@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const token = localStorage.getItem("token");
+const token = localStorage.getItem("abhyaasi_admin_token");
 let initialState;
 
 if (token) {

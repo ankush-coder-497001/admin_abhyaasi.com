@@ -4,7 +4,6 @@ import { useGetAllUsers } from "../hooks/useUsers";
 const UserManagement = () => {
   const { data, isLoading, error } = useGetAllUsers();
   const users = data?.users || [];
-  console.log(users);
   if (isLoading) {
     return (
       <div className="h-[70vh] w-full">
@@ -86,29 +85,29 @@ const UserManagement = () => {
                     <div>
                       <strong>Professions:</strong>{" "}
                       {user.enrolledProfessions &&
-                      user.enrolledProfessions.length > 0
+                        user.enrolledProfessions.length > 0
                         ? user.enrolledProfessions
-                            .map((prof) =>
-                              typeof prof === "object" ? prof.title : prof
-                            )
-                            .join(", ")
+                          .map((prof) =>
+                            typeof prof === "object" ? prof.title : prof
+                          )
+                          .join(", ")
                         : "None"}
                     </div>
                     <div>
                       <strong>Courses:</strong>{" "}
                       {user.completedCourses && user.completedCourses.length > 0
                         ? user.completedCourses
-                            .map((course) =>
-                              typeof course === "object" ? course.title : course
-                            )
-                            .join(", ")
+                          .map((course) =>
+                            typeof course === "object" ? course.title : course
+                          )
+                          .join(", ")
                         : "None"}
                     </div>
                   </td>
 
                   {/* Last Login */}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(user.lastLogin).toLocaleString()}
+                    {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}
                   </td>
                 </tr>
               ))}

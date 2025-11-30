@@ -35,13 +35,12 @@ const CourseView = ({ course, onClose }) => {
                 <span className="inline-flex items-center">
                   <span className="font-semibold mr-1">Difficulty:</span>
                   <span
-                    className={`px-2 py-0.5 rounded ${
-                      course.difficulty === "easy"
-                        ? "bg-green-100 text-green-800"
-                        : course.difficulty === "medium"
+                    className={`px-2 py-0.5 rounded ${course.difficulty === "easy"
+                      ? "bg-green-100 text-green-800"
+                      : course.difficulty === "medium"
                         ? "bg-yellow-100 text-yellow-800"
                         : "bg-red-100 text-red-800"
-                    }`}
+                      }`}
                   >
                     {course.difficulty}
                   </span>
@@ -54,9 +53,8 @@ const CourseView = ({ course, onClose }) => {
                   <span className="font-semibold">Status:</span> {course.status}
                 </span>
                 <span
-                  className={`inline-flex items-center ${
-                    course.isPublished ? "text-green-600" : "text-red-600"
-                  }`}
+                  className={`inline-flex items-center ${course.isPublished ? "text-green-600" : "text-red-600"
+                    }`}
                 >
                   <span className="font-semibold">Published:</span>{" "}
                   {course.isPublished ? " Yes" : " No"}
@@ -111,7 +109,7 @@ const CourseView = ({ course, onClose }) => {
                   <h4 className="font-semibold">Theory Notes</h4>
                   <div
                     className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: mod.theoryNotes.text }}
+                    dangerouslySetInnerHTML={{ __html: mod?.theoryNotes?.text }}
                   />
                 </div>
 
@@ -218,7 +216,7 @@ const CourseView = ({ course, onClose }) => {
                       <div className="mt-2">
                         <p className="font-medium text-sm mb-2">Test Cases:</p>
                         <div className="space-y-2">
-                          {mod.codingTask.testcases.map((test) => (
+                          {mod?.codingTask?.testcases.map((test) => (
                             <div
                               key={test.id}
                               className="text-sm bg-white p-2 rounded border"

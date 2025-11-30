@@ -27,7 +27,7 @@ function App() {
         {/* protected routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
-            <Route path="/" element={<Navigate to="/users" replace />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/users" element={<UserManagement />} />
             <Route path="/courses" element={<CoursesManagement />} />
             <Route path="/professions" element={<ProfessionManagement />} />

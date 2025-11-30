@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -15,6 +15,13 @@ const Login = () => {
     isPending: isLoading,
     error: loginError,
   } = useLogin();
+
+  useEffect(() => {
+    const token = localStorage.getItem("abhyaasi_admin_token");
+    if (token) {
+      navigate("/users");
+    }
+  }, [])
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -37,10 +44,10 @@ const Login = () => {
 
           // Dispatch token to Redux
           if (data.token) {
-            localStorage.setItem("token", data.token);
+            localStorage.setItem("abhyaasi_admin_token", data.token);
           }
 
-          navigate("/");
+          navigate("/users");
         },
         onError: (error) => {
           console.log("Login error:", error);

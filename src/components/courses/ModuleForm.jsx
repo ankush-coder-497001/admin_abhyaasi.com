@@ -231,11 +231,11 @@ const ModuleForm = ({ module, onSubmit, onCancel }) => {
             Content
           </label>
           <textarea
-            value={formData.theoryNotes.text}
+            value={formData?.theoryNotes?.text}
             onChange={(e) =>
               setFormData({
                 ...formData,
-                theoryNotes: { text: e.target.value },
+                theoryNotes: { text: e?.target?.value },
               })
             }
             rows="6"
