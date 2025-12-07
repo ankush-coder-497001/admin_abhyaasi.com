@@ -19,6 +19,7 @@ const CreateProfession = ({ setActiveView }) => {
   const [tagInput, setTagInput] = useState("");
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [showCourseDropdown, setShowCourseDropdown] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const nameRef = useRef();
   const descriptionRef = useRef();
@@ -49,6 +50,7 @@ const CreateProfession = ({ setActiveView }) => {
 
   useEffect(() => {
     if (initialProfession && availableCourses?.length) {
+      setIsCollapsed(true);
       nameRef.current.value = initialProfession.name || "";
       descriptionRef.current.value = initialProfession.description || "";
       durationRef.current.value = initialProfession.estimatedDuration || "";
@@ -165,8 +167,8 @@ const CreateProfession = ({ setActiveView }) => {
               toast.success("Profession updated successfully!");
               dispatch(setInitialProfession(data?.profession || data));
             }
-              setActiveView("all-professions");
-            },
+            setActiveView("all-professions");
+          },
           onError: (error) => {
             toast.error("Failed to update profession");
             console.error(error);
@@ -178,6 +180,12 @@ const CreateProfession = ({ setActiveView }) => {
         onSuccess: (data) => {
           const professionId = data?.profession?._id;
 
+          if (!professionId) {
+            toast.error("Failed to get profession ID. Please try again.");
+            console.error("Profession ID is undefined:", data);
+            return;
+          }
+
           // Assign courses after creating profession
           if (courseIdsWithOrder.length > 0) {
             assignCourses(
@@ -185,6 +193,7 @@ const CreateProfession = ({ setActiveView }) => {
               {
                 onSuccess: () => {
                   toast.success("Profession created successfully!");
+                  dispatch(setInitialProfession(null));
                   setActiveView("all-professions");
                 },
                 onError: (error) => {
@@ -195,6 +204,7 @@ const CreateProfession = ({ setActiveView }) => {
             );
           } else {
             toast.success("Profession created successfully!");
+            dispatch(setInitialProfession(null));
             setActiveView("all-professions");
           }
         },
@@ -285,7 +295,7 @@ const CreateProfession = ({ setActiveView }) => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 bg-[#00000080] bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-[#00000043] bg-opacity-50 flex items-center justify-center z-50">
         <Loader />
       </div>
     );
@@ -296,11 +306,20 @@ const CreateProfession = ({ setActiveView }) => {
       <div className="bg-white shadow-lg rounded-2xl p-8 border border-gray-200">
         {/* Header */}
         <div
-          className={`flex items-center justify-between mb-8 ${
-            initialProfession ? "cursor-pointer select-none" : ""
-          }`}
+          className={`flex items-center justify-between mb-8 ${initialProfession ? "cursor-pointer select-none" : ""
+            }`}
+          onClick={() => initialProfession && setIsCollapsed(!isCollapsed)}
         >
           <div className="flex items-center gap-3">
+            {initialProfession && (
+              <span className="text-gray-500">
+                {isCollapsed ? (
+                  <FaChevronDown size={20} />
+                ) : (
+                  <FaChevronUp size={20} />
+                )}
+              </span>
+            )}
             <div>
               <h2 className="text-3xl font-bold text-gray-900">
                 {initialProfession?.name
@@ -325,7 +344,8 @@ const CreateProfession = ({ setActiveView }) => {
 
         <form
           onSubmit={handleSubmit}
-          className={`space-y-6 transition-all duration-300 `}
+          className={`space-y-6 transition-all duration-300 ${isCollapsed && initialProfession ? "hidden" : ""
+            }`}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -548,13 +568,13 @@ const CreateProfession = ({ setActiveView }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading
                 ? "Processing..."
                 : initialProfession
-                ? "Update Profession"
-                : "Create Profession"}
+                  ? "Update Profession"
+                  : "Create Profession"}
             </button>
           </div>
         </form>
