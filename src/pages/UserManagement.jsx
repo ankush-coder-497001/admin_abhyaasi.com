@@ -52,7 +52,7 @@ const UserManagement = () => {
                   {/* User Info */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
                         {user.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="ml-4">
